@@ -1,27 +1,4 @@
-WITH RECURSIVE bord_state AS (
-    SELECT 
-        bord.bord_id,
-        bord.row_or_col_index,
-        bord.row_numbers,
-        bord.col_numbers,
-        0::bigint AS draw_id,
-        B'011111'::bit(6) AS row_state,
-        B'011111'::bit(6) AS col_state
-    FROM bord
-UNION ALL
-    SELECT 
-        bord_state.bord_id,
-        bord_state.row_or_col_index,
-        bord_state.row_numbers,
-        bord_state.col_numbers,
-        draw.draw_id,
-        set_bit(bord_state.row_state, COALESCE(array_position(bord_state.row_numbers, draw.number), 0), 0)::bit(6) AS row_state,
-        set_bit(bord_state.col_state, COALESCE(array_position(bord_state.col_numbers, draw.number), 0), 0)::bit(6) AS col_state
-    FROM bord_state 
-    INNER JOIN draw 
-            ON draw.draw_id = bord_state.draw_id + 1
-           AND NOT (bord_state.row_state = 0::bit(6) OR bord_state.col_state = 0::bit(6))
-), draw AS (
+WITH RECURSIVE draw AS (
     SELECT 
         draw.draw_id,
         draw.number::int
@@ -46,6 +23,29 @@ UNION ALL
     WHERE id > 1
       AND data != ''
     GROUP BY 1, 2
+), bord_state AS (
+    SELECT 
+        bord.bord_id,
+        bord.row_or_col_index,
+        bord.row_numbers,
+        bord.col_numbers,
+        0::bigint AS draw_id,
+        B'011111'::bit(6) AS row_state,
+        B'011111'::bit(6) AS col_state
+    FROM bord
+UNION ALL
+    SELECT 
+        bord_state.bord_id,
+        bord_state.row_or_col_index,
+        bord_state.row_numbers,
+        bord_state.col_numbers,
+        draw.draw_id,
+        set_bit(bord_state.row_state, COALESCE(array_position(bord_state.row_numbers, draw.number), 0), 0)::bit(6) AS row_state,
+        set_bit(bord_state.col_state, COALESCE(array_position(bord_state.col_numbers, draw.number), 0), 0)::bit(6) AS col_state
+    FROM bord_state 
+    INNER JOIN draw 
+            ON draw.draw_id = bord_state.draw_id + 1
+           AND NOT (bord_state.row_state = 0::bit(6) OR bord_state.col_state = 0::bit(6))
 ), last_winning_draw AS (
     SELECT 
         src.bord_id,

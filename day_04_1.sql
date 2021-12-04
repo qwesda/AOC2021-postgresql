@@ -1,4 +1,29 @@
-WITH RECURSIVE bord_state AS (
+WITH RECURSIVE draw AS (
+    SELECT 
+        draw.draw_id,
+        draw.number::int
+    FROM aoc."2021_day_04"
+    INNER JOIN regexp_split_to_table(data, ',') WITH ORDINALITY draw(number, draw_id) 
+            ON TRUE
+    WHERE id = 1
+), bord AS (
+    SELECT 
+        (src.id - 2) / 6 AS bord_id,
+        row_or_col_index,
+        array_agg(foo.number::int ORDER BY col_id) FILTER (WHERE (src.id - 2) % 6 = row_or_col_index) AS row_numbers,
+        array_agg(foo.number::int ORDER BY (src.id - 2) % 6) FILTER (WHERE col_id = row_or_col_index) AS col_numbers
+        
+    FROM aoc."2021_day_04" AS src
+
+    INNER JOIN regexp_split_to_table(trim(data), '\s+') WITH ORDINALITY foo(number, col_id) 
+            ON TRUE
+    INNER JOIN generate_series(1, 5) AS row_or_col_index 
+            ON TRUE
+
+    WHERE id > 1
+      AND data != ''
+    GROUP BY 1, 2
+), bord_state AS (
     SELECT 
         bord.bord_id,
         bord.row_or_col_index,
@@ -20,31 +45,6 @@ UNION ALL
     FROM bord_state 
     INNER JOIN draw 
             ON draw.draw_id = bord_state.draw_id + 1
-), draw AS (
-    SELECT 
-        draw.draw_id,
-        draw.number::int
-    FROM aoc."2021_day_04"
-    INNER JOIN regexp_split_to_table(data, ',') WITH ORDINALITY draw(number, draw_id) 
-            ON TRUE
-    WHERE id = 1
-), bord AS (
-    SELECT 
-        (src.id - 2) / 6 AS bord_id,
-        row_or_col_index,
-        array_agg(foo.number::int ORDER BY col_id) FILTER (WHERE (src.id - 2) % 6 = row_or_col_index) AS row_numbers,
-        array_agg(foo.number::int ORDER BY (src.id - 2) % 6) FILTER (WHERE col_id = row_or_col_index) AS col_numbers
-        
-    FROM aoc."2021_day_04" AS src
-
-    INNER JOIN regexp_split_to_table(trim(data), '\s+') WITH ORDINALITY foo(number, col_id) 
-            ON TRUE
-    INNER JOIN generate_series(1, 5) AS row_or_col_index
-            ON TRUE
-
-    WHERE id > 1
-      AND data != ''
-    GROUP BY 1, 2
 ), winning_draw AS (
     SELECT 
         bord_state.bord_id,
