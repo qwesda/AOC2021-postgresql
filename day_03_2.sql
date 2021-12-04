@@ -47,10 +47,7 @@ FROM (
         substr(data, 3, 1)::int *2^9 +
         substr(data, 2, 1)::int *2^10 +
         substr(data, 1, 1)::int *2^11 AS data_int
-    FROM (
-        SELECT *
-        FROM foo
-        WHERE (is_generator = TRUE  AND pos = ANY(SELECT max(pos) FROM foo WHERE is_generator = TRUE))
-           OR (is_generator = FALSE AND pos = ANY(SELECT max(pos) FROM foo WHERE is_generator = FALSE))
-    ) AS src
+    FROM foo
+    WHERE (is_generator = TRUE  AND pos = ANY(SELECT max(pos) FROM foo WHERE is_generator = TRUE))
+       OR (is_generator = FALSE AND pos = ANY(SELECT max(pos) FROM foo WHERE is_generator = FALSE))
 ) AS src;
