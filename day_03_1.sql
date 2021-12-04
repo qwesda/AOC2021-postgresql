@@ -1,6 +1,6 @@
 SELECT gamma::int * (~gamma)::int
 FROM (
-    SELECT 
+    SELECT
         (
             CASE WHEN count_1 > count_half THEN '1'::bit(1) ELSE '0'::bit END ||
             CASE WHEN count_2 > count_half THEN '1'::bit(1) ELSE '0'::bit END ||
