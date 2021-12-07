@@ -15,10 +15,8 @@ WITH RECURSIVE draw AS (
         
     FROM aoc."2021_day_04" AS src
 
-    INNER JOIN regexp_split_to_table(trim(data), '\s+') WITH ORDINALITY foo(number, col_id) 
-            ON TRUE
-    INNER JOIN generate_series(1, 5) AS row_or_col_index 
-            ON TRUE
+    CROSS JOIN regexp_split_to_table(trim(data), '\s+') WITH ORDINALITY foo(number, col_id) 
+    CROSS JOIN generate_series(1, 5) AS row_or_col_index 
 
     WHERE id > 1
       AND data != ''

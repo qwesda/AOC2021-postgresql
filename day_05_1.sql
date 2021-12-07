@@ -5,15 +5,15 @@ WITH line_point AS (
     
     FROM aoc."2021_day_05" AS src
     
-    INNER JOIN LATERAL (
+    CROSS JOIN LATERAL (
         SELECT line_coordinates[1]::int, line_coordinates[2]::int, line_coordinates[3]::int, line_coordinates[4]::int
         FROM regexp_match(data, '(\d+),(\d+)\s->\s(\d+),(\d+)') AS line_coordinates
-    ) AS _(x1, y1, x2, y2) ON TRUE
+    ) AS _(x1, y1, x2, y2)
     
-    INNER JOIN generate_series(
+    CROSS JOIN generate_series(
         CASE WHEN y1 = y2 THEN least(x1, x2) ELSE least(y1, y2) END,
         CASE WHEN y1 = y2 THEN greatest(x1, x2) ELSE greatest(y1, y2) END
-    ) AS i ON TRUE
+    ) AS i
     
     WHERE (x1 = x2 OR y1 = y2)
 )

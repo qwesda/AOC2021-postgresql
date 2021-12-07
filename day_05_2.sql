@@ -12,15 +12,15 @@ WITH line_point AS (
 
     FROM aoc."2021_day_05" AS src
 
-    INNER JOIN LATERAL (
+    CROSS JOIN LATERAL (
         SELECT line_coordinates[1]::int, line_coordinates[2]::int, line_coordinates[3]::int, line_coordinates[4]::int
         FROM regexp_match(data, '(\d+),(\d+)\s->\s(\d+),(\d+)') AS line_coordinates
-    ) AS _(x1, y1, x2, y2) ON TRUE
+    ) AS _(x1, y1, x2, y2)
             
-    INNER JOIN generate_series(0, greatest(
+    CROSS JOIN generate_series(0, greatest(
         greatest(x1, x2) - least(x1, x2),
         greatest(y1, y2) - least(y1, y2)
-    )) AS i ON TRUE
+    )) AS i
 )
 SELECT count(*) OVER ()
 FROM line_point

@@ -6,8 +6,7 @@ WITH RECURSIVE population AS (
         
     FROM aoc."2021_day_06" AS src
     
-    INNER JOIN generate_series(0, 8) AS i
-            ON TRUE
+    CROSS JOIN generate_series(0, 8) AS i
     
     LEFT  JOIN regexp_split_to_table(src.data, ',') AS _(fish_state)
             ON fish_state::int = i

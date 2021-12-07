@@ -6,14 +6,12 @@ WITH positions AS (
         
     FROM aoc."2021_day_07" AS src
     
-    INNER JOIN regexp_split_to_table(src.data, ',') AS _(crab_pos)
-            ON TRUE
+    CROSS JOIN regexp_split_to_table(src.data, ',') AS _(crab_pos)
 )
 SELECT 
     sum(abs(target_pos - crab_pos)) AS fuel_spent
 FROM positions
-INNER JOIN generate_series(positions.min, positions.max) AS target_pos
-        ON TRUE
+CROSS JOIN generate_series(positions.min, positions.max) AS target_pos
 GROUP BY target_pos
 ORDER BY 1 ASC
 LIMIT 1;

@@ -14,10 +14,8 @@ WITH RECURSIVE draw AS (
         array_agg(foo.number::int ORDER BY (src.id - 2) % 6) FILTER (WHERE col_id = row_or_col_index) AS col_numbers        
     FROM aoc."2021_day_04" AS src
 
-    INNER JOIN regexp_split_to_table(trim(data), '\s+') WITH ORDINALITY foo(number, col_id) 
-            ON TRUE
-    INNER JOIN generate_series(1, 5) AS row_or_col_index
-            ON TRUE
+    CROSS JOIN regexp_split_to_table(trim(data), '\s+') WITH ORDINALITY foo(number, col_id) 
+    CROSS JOIN generate_series(1, 5) AS row_or_col_index
 
     WHERE id > 1
       AND data != ''
