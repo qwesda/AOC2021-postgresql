@@ -10,11 +10,10 @@ WITH positions AS (
             ON TRUE
 )
 SELECT 
-    target_pos,
     sum(((abs(target_pos - crab_pos) + 1) * (abs(target_pos - crab_pos)))/2) AS fuel_spent
 FROM positions
 INNER JOIN generate_series(positions.min, positions.max) AS target_pos
         ON TRUE
 GROUP BY target_pos
-ORDER BY 2 ASC
+ORDER BY 1 ASC
 LIMIT 1;
