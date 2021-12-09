@@ -19,8 +19,10 @@ WITH RECURSIVE map AS (
         map_to.x_pos AS to_x_pos,
         map_to.y_pos AS to_y_pos
     FROM map AS map_from
+    CROSS JOIN (VALUES (-1, 0), (1, 0), (0, -1), (0, 1)) AS _(delta_x, delta_y)
     INNER JOIN map AS map_to
-            ON (abs(map_to.x_pos - map_from.x_pos) + abs(map_to.y_pos - map_from.y_pos)) = 1
+            ON map_to.x_pos = map_from.x_pos + delta_x
+           AND map_to.y_pos = map_from.y_pos + delta_y
            AND map_from.height_self > map_to.height_self
     WHERE map_from.height_self < 9
 ), map_with_drain AS (
